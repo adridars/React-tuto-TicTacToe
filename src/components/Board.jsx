@@ -1,7 +1,7 @@
 import React from "react";
 import Square from "./square";
 
-function Board({ squaresValue, calculateWinner, xIsNext, handleClick }) {
+function Board({ squaresValue, handleClick }) {
   function renderSquare(a) {
     return (
       <Square
@@ -12,13 +12,9 @@ function Board({ squaresValue, calculateWinner, xIsNext, handleClick }) {
       />
     );
   }
-  const winner = calculateWinner(squaresValue);
-  let status = winner
-    ? "Winner: " + winner
-    : "Next player: " + (xIsNext ? "X" : "O");
+
   return (
     <div>
-      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}

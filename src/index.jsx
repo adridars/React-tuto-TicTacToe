@@ -5,31 +5,33 @@ import Board from "./components/Board";
 import calculateWinner from "./components/winnerCalculation";
 
 const Game = () => {
-  const [squaresValue, setSquaresValue] = useState(new Array(9).fill(null));
+  const [historyMove, setHistoryMove] = useState([
+    { move: new Array(9).fill(null) },
+  ]);
   const [xIsNext, setXIsNext] = useState(true);
+  const actualMove = historyMove[historyMove.length - 1].move;
 
   const handleClick = function (va) {
-    const squares = squaresValue.slice();
-    if (squares[va] || calculateWinner(squaresValue)) {
+    const move = actualMove.slice();
+    if (move[va] || calculateWinner(move)) {
       return;
     }
-    squares[va] = xIsNext ? "X" : "O";
+    move[va] = xIsNext ? "X" : "O";
     setXIsNext(!xIsNext);
-    setSquaresValue(squares);
+    setHistoryMove(historyMove.concat({ move }));
   };
+  const winner = calculateWinner(actualMove);
+  let status = winner
+    ? "Winner: " + winner
+    : "Next player: " + (xIsNext ? "X" : "O");
 
   return (
     <div className="game">
       <div className="game-board">
-        <Board
-          squaresValue={squaresValue}
-          calculateWinner={calculateWinner}
-          xIsNext={xIsNext}
-          handleClick={handleClick}
-        />
+        <Board squaresValue={actualMove} handleClick={handleClick} />
       </div>
       <div className="game-info">
-        <div>{/* status */}</div>
+        <div>{status}</div>
         <ol>{/* TODO */}</ol>
       </div>
     </div>
