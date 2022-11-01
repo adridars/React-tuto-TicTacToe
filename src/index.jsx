@@ -3,27 +3,52 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import Board from "./components/Board";
 import calculateWinner from "./components/winnerCalculation";
+import Moves from "./components/Moves";
 
 const Game = () => {
+  //states and initial values
+
   const [historyMove, setHistoryMove] = useState([
-    { move: new Array(9).fill(null) },
+    { move: new Array(9).fill(null), id: Date.now() },
   ]);
   const [xIsNext, setXIsNext] = useState(true);
-  const actualMove = historyMove[historyMove.length - 1].move;
+  const [filteredIndex, setFilteredIndex] = useState(0);
+
+  const actualMove = filteredIndex
+    ? historyMove[filteredIndex].move
+    : historyMove[historyMove.length - 1].move;
+
+  //functions
 
   const handleClick = function (va) {
+    // if (filteredIndex) {
+    //   setHistoryMove((prevState) => [...prevState.slice(filteredIndex)]);
+    //   return;
+    // }
+    // setFilteredIndex(0);
+
     const move = actualMove.slice();
     if (move[va] || calculateWinner(move)) {
       return;
     }
     move[va] = xIsNext ? "X" : "O";
     setXIsNext(!xIsNext);
-    setHistoryMove(historyMove.concat({ move }));
+    setHistoryMove((prevState) => [...prevState, { move, id: Date.now() }]);
+    setFilteredIndex(historyMove.length);
   };
+
+  const jumpTo = (inx) => {
+    setFilteredIndex(inx);
+    setXIsNext(inx % 2 === 0);
+  };
+
   const winner = calculateWinner(actualMove);
+
   let status = winner
     ? "Winner: " + winner
     : "Next player: " + (xIsNext ? "X" : "O");
+
+  // father component render
 
   return (
     <div className="game">
@@ -32,7 +57,11 @@ const Game = () => {
       </div>
       <div className="game-info">
         <div>{status}</div>
-        <ol>{/* TODO */}</ol>
+        <ol>
+          {historyMove.map((move, index) => {
+            return <Moves key={move.id} jumpTo={jumpTo} moveNumber={index} />;
+          })}
+        </ol>
       </div>
     </div>
   );
